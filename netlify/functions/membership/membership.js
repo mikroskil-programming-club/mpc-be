@@ -19,15 +19,28 @@ exports.handler = async event => {
         }
     }
     const nim = event.queryStringParameters.nim || event.queryStringParameters.NIM;
-    
+
     const response = await fetch(process.env.FILEPATH, {
         headers: {
             Authorization: "Bearer " + process.env.TOKEN
         }
     });
     const data = await response.json();
-    const content = Buffer.from(data.content, "base64").toString();   
-    const members = (JSON.parse(content)).data;
+    const content = Buffer.from(data.content, "base64").toString();
+    const parsedContent = JSON.parse(content);
+    const members = parsedContent.data;
+
+    const commitRes = await fetch("https://api.github.com/repos/trisbman/mpc-be/commits", {
+        headers: {
+            Authorization: "Bearer " + process.env.TOKEN
+        }
+    });
+    const commitData = await commitRes.json();
+    const modifiedDt = commitData[0].commit.author.date;
+    const formattedDt = new Intl.DateTimeFormat("en-ID", {
+        dateStyle: "full",
+        timeStyle: "long"
+    }).format(new Date(modifiedDt));
 
     const member = members.find(member => member.NIM == nim);
     if (!member) {
@@ -40,10 +53,6 @@ exports.handler = async event => {
 
     member.paid = member.paid || false;
 
-    const timestamp = fs.readFileSync(path.join(__dirname, "timestamp.txt"), {
-        encoding: "utf-8"
-    });
-
     return {
         statusCode: 200,
         headers,
@@ -51,7 +60,7 @@ exports.handler = async event => {
             "name": member.fullName,
             "paid": member.paid,
             "nim": member.NIM,
-            "lastUpdated": timestamp.toString()
+            "lastUpdated": formattedDt
         }),
     }
 }

@@ -1,0 +1,13 @@
+{
+    "name": "mpc-be",
+    "version": "1.0.0",
+    "description": "",
+    "author": "trisbman",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.4.1"
+    },
+    "scripts": {
+        "dev": "netlify dev"
+    }
+}

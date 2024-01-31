@@ -13,6 +13,11 @@
     status = 200
 
 [[redirects]]
+    from = "/stats"
+    to = "/.netlify/functions/stats"
+    status = 200
+
+[[redirects]]
     from = "/*"
     to = "/.netlify/functions/membership"
     status = 200
